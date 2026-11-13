@@ -1,0 +1,15 @@
+{
+  "name": "control-de-tarea",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma educativa para gestionar tareas, entregas y seguimiento académico.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

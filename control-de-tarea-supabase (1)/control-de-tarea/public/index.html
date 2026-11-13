@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1d35">
+  <title>Control de Tarea | Plataforma educativa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="img/logo-control-de-tarea.jpg">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="index.html"><img src="img/logo-control-de-tarea.jpg" alt="Logo Control de Tarea"><span>CONTROL DE TAREA<small>PLATAFORMA EDUCATIVA</small></span></a>
+    <div class="nav-caption">MENÚ PRINCIPAL</div>
+    <nav id="main-nav">
+      <button class="nav-link active" data-view="dashboard"><span>⌂</span> Panel principal</button>
+      <button class="nav-link" data-view="tasks"><span>▤</span> Tareas y exámenes <b id="side-count">0</b></button>
+      <button class="nav-link teacher-only hidden" data-view="students"><span>♙</span> Alumnos</button>
+
+      <button class="nav-link student-only hidden" data-view="deliveries"><span>↥</span> Mis entregas</button>
+      <button class="nav-link teacher-only hidden" data-view="deliveries"><span>▣</span> Entregas recibidas</button>
+      <button class="nav-link teacher-only hidden" data-view="attendance"><span>✓</span> Asistencia</button>
+      <button class="nav-link" data-view="calendar"><span>▦</span> Calendario</button>
+      <button class="nav-link" data-view="grades"><span>★</span> Calificaciones</button>
+      <button class="nav-link" data-view="notifications"><span>♢</span> Notificaciones <i id="notification-count">0</i></button>
+    </nav>
+    
+    <div class="sidebar-bottom">
+      <div class="help-card"><span class="gold-star">✦</span><strong>Tu espacio de aprendizaje</strong><p>Organizá tus actividades escolares en un solo lugar.</p></div>
+      <button class="nav-link" id="profile-switch"><span>⇄</span> Cambiar perfil</button>
+      <div class="side-footer">CONTROL DE TAREA <span>•</span> 2026</div>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <div><div class="eyebrow" id="date-label">PLATAFORMA EDUCATIVA</div><h1 id="page-title">Panel principal</h1></div>
+      <div class="top-actions"><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar modo oscuro">☾ <span>Modo oscuro</span></button><span class="status-dot"></span><span class="online-label">Modo de demostración</span><div class="avatar" id="avatar">AL</div><div><strong id="user-name">Usuario</strong><small id="user-role">Perfil</small></div></div>
+    </header>
+    <section class="content">
+      <section id="view-dashboard" class="view">
+        <div class="welcome-banner"><div><span class="banner-kicker">TU ESPACIO DE APRENDIZAJE</span><h2>¡Hola, <span id="welcome-name">Leonel</span>!</h2><p id="welcome-copy">Todo lo que necesitás para organizar tus actividades escolares.</p></div><div class="banner-logo"><img src="img/logo-control-de-tarea.jpg" alt=""></div></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span id="stat-label-one">Actividades</span><span class="stat-icon">▤</span></div><strong id="stat-total">0</strong><small>En la plataforma</small></article>
+          <article class="stat-card"><div class="stat-top"><span id="stat-label-two">Pendientes</span><span class="stat-icon">◷</span></div><strong id="stat-pending">0</strong><small>Para completar</small></article>
+          <article class="stat-card"><div class="stat-top"><span id="stat-label-three">Entregadas</span><span class="stat-icon">✓</span></div><strong id="stat-done">0</strong><small>Trabajos registrados</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Materias</span><span class="stat-icon">▦</span></div><strong id="stat-subjects">0</strong><small>Áreas de estudio</small></article>
+        </div>
+        <div class="section-heading"><div><span class="eyebrow">SEGUIMIENTO</span><h2 id="recent-title">Actividades recientes</h2></div><button class="text-button" data-go="tasks">Ver todas →</button></div>
+        <div id="recent-list" class="activity-list"></div>
+      </section>
+
+      <section id="view-tasks" class="view hidden">
+        <div class="section-heading"><div><span class="eyebrow">ORGANIZACIÓN ACADÉMICA</span><h2>Listado de actividades</h2><p class="muted">Consultá las consignas, materias y fechas de entrega.</p></div><a class="primary-btn teacher-only admin-only hidden" href="crear.html">＋ Crear tarea</a></div>
+        <div class="filters"><input id="search-task" placeholder="Buscar por título o materia..."><select id="filter-subject"><option value="">Todas las materias</option></select><select id="filter-status"><option value="">Todos los estados</option><option value="pending">Pendientes</option><option value="done">Entregadas</option><option value="late">Vencidas</option></select></div>
+        <div id="task-list" class="task-grid"></div>
+      </section>
+
+      <section id="view-deliveries" class="view hidden"><div class="section-heading"><div><span class="eyebrow">TRABAJOS</span><h2 id="delivery-heading">Entregas</h2><p class="muted">Seguimiento de los trabajos enviados.</p></div></div><div id="delivery-list" class="table-wrap"></div></section>
+      <section id="view-students" class="view hidden"><div class="section-heading"><div><span class="eyebrow">GESTIÓN ACADÉMICA</span><h2>Alumnos</h2><p class="muted">Listado de estudiantes registrados en la demostración.</p></div></div><div id="student-list" class="table-wrap"></div></section>
+      <section id="view-subjects" class="view hidden"><div class="section-heading"><div><span class="eyebrow">ORGANIZACIÓN</span><h2>Materias y cursos</h2></div></div><div id="subject-list" class="subject-grid"></div></section>
+      <section id="view-attendance" class="view hidden"><div class="section-heading"><div><span class="eyebrow">SEGUIMIENTO</span><h2>Asistencia</h2><p class="muted">Registro de asistencia de ejemplo.</p></div></div><div id="attendance-list" class="table-wrap"></div></section>
+      <section id="view-calendar" class="view hidden"><div class="section-heading"><div><span class="eyebrow">ORGANIZACIÓN</span><h2>Calendario de actividades</h2></div></div><div id="calendar-list" class="activity-list"></div></section>
+      <section id="view-grades" class="view hidden"><div class="section-heading"><div><span class="eyebrow">RENDIMIENTO</span><h2>Calificaciones</h2><p class="muted">Notas de ejemplo para visualizar el módulo.</p></div></div><div id="grades-list" class="table-wrap"></div></section>
+      <section id="view-notifications" class="view hidden"><div class="section-heading"><div><span class="eyebrow">AVISOS</span><h2>Notificaciones</h2></div></div><div id="notifications-list" class="activity-list"></div></section>
+    </section>
+    <footer class="footer">Control de Tarea </footer>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="auth-modal">
+  <div class="role-modal auth-modal">
+    <img src="img/logo-control-de-tarea.jpg" alt="Control de Tarea" class="modal-logo">
+    <span class="eyebrow">PLATAFORMA EDUCATIVA</span>
+    <h2 id="auth-title">Ingresar a Control de Tarea</h2>
+    <p id="auth-description">Ingresá con tu DNI y contraseña o creá una cuenta.</p>
+    <div class="auth-tabs"><button type="button" class="auth-tab active" data-auth-mode="login">Iniciar sesión</button><button type="button" class="auth-tab" data-auth-mode="register">Registrarme</button></div>
+    <form id="auth-form">
+      <label>Nombre y apellido <input id="auth-name" maxlength="60" placeholder="Ej. Leonel Alamo"></label>
+      <label>DNI <input id="auth-dni" inputmode="numeric" autocomplete="username" maxlength="8" required placeholder="Ingresá tu DNI"></label>
+      <label>Contraseña <input id="auth-password" type="password" autocomplete="current-password" minlength="6" required placeholder="Ingresá tu contraseña"></label>
+      <label id="role-field">Rol<select id="auth-role"><option value="student">Alumno</option><option value="teacher">Profesor</option></select></label>
+      <button class="primary-btn full-btn" id="auth-submit" type="submit">Ingresar al sistema →</button>
+    </form>
+    <small class="demo-note">Protegé tu contraseña. En modo Supabase, el acceso se valida de forma segura y los datos se sincronizan en la nube.</small>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+</body></html>
