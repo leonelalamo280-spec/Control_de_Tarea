@@ -82,7 +82,13 @@
       <label>Nombre y apellido <input id="auth-name" maxlength="60" placeholder="Ej. Leonel Alamo"></label>
       <label>DNI <input id="auth-dni" inputmode="numeric" autocomplete="username" maxlength="8" required placeholder="Ingresá tu DNI"></label>
       <label>Contraseña <input id="auth-password" type="password" autocomplete="current-password" minlength="6" required placeholder="Ingresá tu contraseña"></label>
-      <label id="role-field">Rol<select id="auth-role"><option value="student">Alumno</option><option value="teacher">Profesor</option></select></label>
+      <label id="role-field">Ingresar como
+        <select id="auth-role" required>
+          <option value="student">Alumno</option>
+          <option value="teacher">Profesor</option>
+        </select>
+        <small class="feedback">El perfil elegido debe coincidir con el rol autorizado de tu cuenta.</small>
+      </label>
       <button class="primary-btn full-btn" id="auth-submit" type="submit">Ingresar al sistema →</button>
     </form>
     <small class="demo-note">Protegé tu contraseña. En modo Supabase, el acceso se valida de forma segura y los datos se sincronizan en la nube.</small>

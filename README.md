@@ -24,7 +24,7 @@ Proyecto escolar desarrollado con HTML, CSS y JavaScript. Esta versión incorpor
 
 ## 2. Crear las tablas y políticas
 1. Abrí **SQL Editor → New query**.
-2. Copiá y ejecutá todo el contenido de `supabase/schema.sql`.
+2. Copiá y ejecutá todo el contenido de `CONTROL_DE_TAREA_SUPABASE.sql` (también está en `supabase/schema.sql`).
 3. En **Authentication → Providers → Email**, habilitá Email.
 4. Como este proyecto identifica las cuentas con DNI y no usa una casilla de correo real, para las pruebas escolares desactivá **Confirm email** en la configuración de autenticación. Si se mantiene activada, el registro puede requerir una confirmación que no llegará al alumno.
 
@@ -77,3 +77,23 @@ npm run preview
 
 ---
 **Control de Tarea — Organizar, aprender y avanzar.**
+
+
+## Selector de perfil
+La pantalla de acceso muestra el selector **Alumno / Profesor**. Al iniciar sesión, el sistema comprueba que el perfil elegido coincida con el rol guardado en Supabase. Elegir “Profesor” no otorga permisos docentes. El alta pública crea cuentas de alumno; un administrador debe habilitar las cuentas de profesor desde Supabase.
+
+
+## Solución al error de carga de Supabase
+La librería `@supabase/supabase-js` ahora se instala como dependencia local del proyecto y Vite la empaqueta; ya no se descarga dinámicamente desde `esm.sh`. Después de reemplazar la carpeta del proyecto, ejecutá `npm install` y luego `npm run dev`.
+
+
+## Publicar en Vercel
+1. Subí esta carpeta a un repositorio de GitHub (no subas `.env.local`).
+2. En Vercel elegí **Add New → Project** e importá ese repositorio.
+3. Configurá **Framework Preset: Vite**, **Build Command: `npm run build`** y **Output Directory: `dist`**.
+4. En **Settings → Environment Variables**, agregá:
+   - `VITE_SUPABASE_URL` = URL del proyecto Supabase (ej. `https://xxxx.supabase.co`)
+   - `VITE_SUPABASE_ANON_KEY` = clave `anon` o `publishable` del proyecto.
+5. Guardá y hacé **Redeploy** para que tome las variables.
+
+En tu computadora, creá `.env.local` copiando `.env.example` y completá esas dos variables. No publiques claves `service_role` ni `secret`.

@@ -111,3 +111,13 @@ using (public.current_user_role() = 'teacher') with check (public.current_user_r
 drop policy if exists "teachers manage attendance" on public.attendance;
 create policy "teachers manage attendance" on public.attendance for all to authenticated
 using (public.current_user_role() = 'teacher') with check (public.current_user_role() = 'teacher');
+
+
+-- Permisos de acceso a través de la API de Supabase.
+-- Las políticas RLS anteriores siguen limitando qué filas puede usar cada rol.
+grant usage on schema public to authenticated;
+grant select on public.profiles to authenticated;
+grant select, insert, update, delete on public.tasks to authenticated;
+grant select, insert, update on public.deliveries to authenticated;
+grant select, insert, update, delete on public.attendance to authenticated;
+grant execute on function public.current_user_role() to authenticated;

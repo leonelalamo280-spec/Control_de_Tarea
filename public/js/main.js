@@ -22,11 +22,12 @@ function switchAuth(mode){
   authMode=mode;
   $$(".auth-tab").forEach(b=>b.classList.toggle("active",b.dataset.authMode===mode));
   $("#auth-title").textContent=mode==="login"?"Ingresar a Control de Tarea":"Crear una cuenta";
-  $("#auth-description").textContent=mode==="login"?"Ingresá con tu DNI y contraseña.":"Completá tus datos para crear una cuenta de alumno. Los profesores son habilitados por un administrador.";
+  $("#auth-description").textContent=mode==="login"?"Elegí tu perfil e ingresá con tu DNI y contraseña.":"Completá tus datos. Las cuentas de alumno se crean desde aquí; las cuentas de profesor requieren autorización del administrador.";
   $("#auth-name").classList.toggle("required",mode==="register");
   $("#auth-name").required=mode==="register";
   $("#auth-name").parentElement.classList.toggle("hidden",mode==="login");
-  $("#role-field").classList.toggle("hidden",mode==="login"||isSupabaseMode());
+  // El selector de perfil queda visible en modo demo y en Supabase.
+  // En Supabase solo selecciona el perfil esperado; no concede permisos.
   $("#auth-submit").textContent=mode==="login"?"Ingresar al sistema →":"Crear cuenta →";
 }
 async function authSubmit(e){
@@ -35,11 +36,22 @@ async function authSubmit(e){
   if(password.length<6){toast("La contraseña debe tener al menos 6 caracteres.");return;}
   try{
     let account;
+    const selectedRole=$("#auth-role").value;
     if(authMode==="register"){
+      if(selectedRole==="teacher"){
+        toast("Las cuentas de profesor deben ser habilitadas por un administrador. Seleccioná Alumno para registrarte.");
+        return;
+      }
       const name=$("#auth-name").value.trim();if(!name){toast("Ingresá tu nombre y apellido.");return;}
-      account=await registerAccount({dni:id,name,password,role:isSupabaseMode()?"student":$("#auth-role").value});
+      account=await registerAccount({dni:id,name,password,role:"student"});
       toast("Cuenta de alumno creada correctamente.");
-    }else account=await loginAccount({dni:id,password});
+    }else {
+      account=await loginAccount({dni:id,password});
+      if(account.role!==selectedRole){
+        await logoutAccount();
+        throw new Error(selectedRole==="teacher"?"Esta cuenta no está registrada como profesor. Elegí Alumno o verificá tu cuenta.":"Esta cuenta no está registrada como alumno. Elegí Profesor o verificá tu cuenta.");
+      }
+    }
     setAccount(account);$("#auth-modal").classList.add("hidden");data=await getData();render();
   }catch(error){console.error(error);toast(error.message||"No se pudo completar la autenticación.");}
 }
