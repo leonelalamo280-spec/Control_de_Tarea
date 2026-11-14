@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { SUPABASE_URL, SUPABASE_ANON_KEY, USE_LOCAL_DEMO } from "./config.js";
 
 const STORAGE_KEY = "control_tarea_v2";
@@ -17,6 +16,7 @@ let activeProfile = null;
 async function client(){
   if(USE_LOCAL_DEMO) return null;
   if(!supabase){
+    const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
   }
   return supabase;
@@ -41,42 +41,27 @@ export async function restoreSession(){
   activeProfile=profileFrom(data);return activeProfile;
 }
 export async function registerAccount({dni,name,password,role="student"}){
+  dni=String(dni||"").replace(/\D/g,"");
+  if(!/^\d{7,8}$/.test(dni)) throw new Error("El DNI debe tener 7 u 8 números.");
+  if(!String(name||"").trim()) throw new Error("Ingresá tu nombre y apellido.");
+  if(String(password||"").length<6) throw new Error("La contraseña debe tener al menos 6 caracteres.");
   if(USE_LOCAL_DEMO){
     const accounts=JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||"[]");
     if(accounts.some(a=>a.dni===dni)) throw new Error("Ya existe una cuenta con ese DNI.");
-    const account={dni,password,name,role};accounts.push(account);localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(accounts));
+    const account={dni,password,name,role:"student"};accounts.push(account);localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(accounts));
     const session={dni,name,role};localStorage.setItem(SESSION_KEY,JSON.stringify(session));return session;
   }
   const sb=await client();
-  const normalizedDni=String(dni).replace(/\D/g,"");
-  const {data,error}=await sb.auth.signUp({
-    email:dniEmail(normalizedDni),
-    password,
-    options:{data:{dni:normalizedDni,full_name:name.trim(),role:"student"}}
-  });
-  if(error){
-    const message=String(error.message||"").toLowerCase();
-    if(error.code==="23505" || message.includes("duplicate") || message.includes("already registered")){
-      throw new Error("Ese DNI ya tiene una cuenta registrada. Probá iniciar sesión o verificá que el DNI esté bien escrito.");
-    }
-    if(message.includes("database error saving new user")){
-      throw new Error("Supabase no pudo crear el perfil del alumno. Revisá que hayas ejecutado completo el archivo supabase/schema.sql en SQL Editor y que el DNI no esté registrado.");
-    }
-    throw new Error(error.message || "No se pudo crear la cuenta.");
-  }
-  if(!data.user) throw new Error("Supabase no devolvió el usuario. Revisá la configuración de Authentication.");
-  if(!data.session){
-    throw new Error("La cuenta se creó, pero Supabase exige confirmar un correo que no se usa en este sistema. En Supabase entrá a Authentication → Providers → Email y desactivá Confirm email; después volvé a registrarte con un DNI que no esté usado.");
-  }
-  const {data:profile,error:profileError}=await sb.from("profiles")
-    .select("id,dni,full_name,role,year,division").eq("id",data.user.id).single();
-  if(profileError){
-    throw new Error("La cuenta de acceso se creó, pero no se pudo leer el perfil. En Supabase ejecutá de nuevo supabase/schema.sql y comprobá el trigger on_auth_user_created. Detalle: "+profileError.message);
-  }
-  activeProfile=profileFrom(profile);
-  return activeProfile;
+  const {data,error}=await sb.auth.signUp({email:dniEmail(dni),password,options:{data:{dni,full_name:name,role:"student"}}});
+  if(error) throw error;
+  if(!data.session) throw new Error("La cuenta se creó, pero Supabase exige confirmar un correo que no se utiliza en este sistema. En Supabase desactivá Authentication → Sign In / Providers → Email → Confirm email y luego iniciá sesión.");
+  const {data:profile,error:profileError}=await sb.from("profiles").select("id,dni,full_name,role,year,division").eq("id",data.user.id).single();
+  if(profileError) throw profileError;
+  activeProfile=profileFrom(profile);return activeProfile;
 }
 export async function loginAccount({dni,password}){
+  dni=String(dni||"").replace(/\D/g,"");
+  if(!/^\d{7,8}$/.test(dni)) throw new Error("Ingresá un DNI válido de 7 u 8 números.");
   if(USE_LOCAL_DEMO){
     const accounts=JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||"[]");const a=accounts.find(x=>x.dni===dni&&x.password===password);
     if(!a) throw new Error("DNI o contraseña incorrectos.");
